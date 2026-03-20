@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+todo-app/node_modules
+# build
+dist/
+
+# logs
+*.log
+
+# environment
+.env
+
+# editor
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
