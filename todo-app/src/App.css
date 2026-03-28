@@ -182,3 +182,24 @@
     border-right-color: var(--border);
   }
 }
+
+.dark {
+  background-color: #2d2a26;
+  color: #e8e6e3;
+}
+
+.dark button {
+  background-color: #4a4a4a;
+  color: #e8e6e3;
+  border-color: #6b6b6b;
+}
+
+.dark input {
+  background-color: #4a4a4a;
+  color: #e8e6e3;
+  border-color: #6b6b6b;
+}
+
+.dark h1, .dark h2, .dark h3, .dark p {
+  color: #e8e6e3;
+}
