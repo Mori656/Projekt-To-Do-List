@@ -20,96 +20,37 @@ export default function TodoItem({
   onDelete,
 }: TodoItemProps) {
   return (
-    <div style={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "16px",
-      border: "1px solid #a0927d",
-      borderRadius: "12px",
-      background: "#f5f1e8",
-      boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-      marginBottom: "16px"
-    }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+    <div className="todo-item">
+      <div className="todo-item__content">
         <button
           onClick={onToggle}
-          style={{
-            width: "24px",
-            height: "24px",
-            border: "2px solid #a0927d",
-            borderRadius: "4px",
-            background: completed ? "#7a8f6b" : "#f5f1e8",
-            color: "white",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            cursor: "pointer",
-            padding: "0",
-            flexShrink: 0
-          }}
+          className={`todo-item__checkbox ${completed ? 'checked' : ''}`}
         >
           {completed && <Check size={16} color="white" />}
         </button>
 
-        <div>
-          <p style={{
-            textDecoration: completed ? "line-through" : "none",
-            margin: "0 0 4px 0",
-            fontSize: "16px",
-            fontWeight: "500",
-            textAlign: "left"
-          }}>
+        <div className="todo-item__text">
+          <p className={`todo-item__title ${completed ? 'completed' : ''}`}>
             {task}
           </p>
-          <p style={{
-            fontSize: "14px",
-            color: "#6b7280",
-            margin: "0"
-          }}>
+          <p className="todo-item__time">
             {timeLimit}
           </p>
         </div>
       </div>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-        <div style={{
-          position: "relative",
-          width: "32px",
-          height: "32px"
-        }}>
+      <div className="todo-item__actions">
+        <div className="todo-item__importance">
           <Shield size={32} color="#a0927d" />
-          <span style={{
-            position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            fontWeight: "bold",
-            fontSize: "12px",
-            color: "#5a4a3a"
-          }}>
+          <span className="todo-item__importance-value">
             {importance}
           </span>
         </div>
 
-        <button onClick={onEdit} style={{
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          padding: "4px",
-          borderRadius: "4px",
-          color: "#8b7355"
-        }}>
+        <button onClick={onEdit} className="todo-item__btn" title="Edytuj">
           ✏️
         </button>
-        <button onClick={onDelete} style={{
-          background: "none",
-          border: "none",
-          cursor: "pointer",
-          padding: "4px",
-          borderRadius: "4px",
-          color: "#8b7355"
-        }}>
+        <button onClick={onDelete} className="todo-item__btn" title="Usuń">
           <Trash2 size={20} />
         </button>
       </div>

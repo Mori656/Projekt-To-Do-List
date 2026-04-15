@@ -5,6 +5,19 @@ import type { ReactNode, Dispatch } from 'react';
 import { todoReducer } from '../reducers/todoReducer';
 import type { Todo, TodoAction, FilterType } from '../types/todo.types';
 
+// Polyfill for crypto.randomUUID() for mobile browsers
+const generateUUID = (): string => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID()
+  }
+  // Fallback for browsers that don't support crypto.randomUUID()
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0
+    const v = c === 'x' ? r : (r & 0x3 | 0x8)
+    return v.toString(16)
+  })
+}
+
 interface TodoContextType {
   todos: Todo[];
   filter: FilterType;
@@ -20,8 +33,8 @@ const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
 export function TodoProvider({ children }: { children: ReactNode }) {
   const [todos, dispatch] = useReducer(todoReducer, [
-    { id: crypto.randomUUID(), task: 'Task A', timeLimit: '2026-03-28 09:00', importance: 5, completed: false },
-    { id: crypto.randomUUID(), task: 'Task B', timeLimit: 'Brak', importance: 3, completed: true }
+    { id: generateUUID(), task: 'Task A', timeLimit: '2026-03-28 09:00', importance: 5, completed: false },
+    { id: generateUUID(), task: 'Task B', timeLimit: 'Brak', importance: 3, completed: true }
   ]);
   const [filter, setFilter] = useState<FilterType>('all');
 

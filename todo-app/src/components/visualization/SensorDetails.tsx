@@ -1,0 +1,1 @@
+//Tu bendzie info o sensorze.
