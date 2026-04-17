@@ -1,1 +1,0 @@
-//komponent wyswieltajacy mape z głośnosciami rajestrowanymi przez sensor.

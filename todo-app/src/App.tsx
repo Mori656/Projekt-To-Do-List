@@ -3,6 +3,7 @@ import { useState, useReducer, useEffect } from 'react'
 import TodoItem from './components/TodoItem'
 import { todoReducer } from './reducers/todoReducer'
 import type { FilterType } from './types/todo.types'
+import { step1Schema} from './hooks/validation_zod'
 
 // Polyfill for crypto.randomUUID() for mobile browsers
 const generateUUID = (): string => {
@@ -43,6 +44,7 @@ function App() {
   const [showSetNameModal, setShowSetNameModal] = useState(false)
   const [newUserName, setNewUserName] = useState('')
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false)
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   // Zamknij hamburger menu przy kliknięciu poza nim
   useEffect(() => {
@@ -147,16 +149,39 @@ function App() {
   }
 
   const handleRegister = () => {
-    if (login.trim() && password.trim() && confirmPassword.trim() && password === confirmPassword) {
-      setIsLoggedIn(true)
-      setShowLoginModal(false)
-      setIsRegisterMode(false)
-      setLogin('')
-      setPassword('')
-      setConfirmPassword('')
-    } else {
-      alert('Wypełnij wszystkie pola i upewnij się, że hasła są identyczne')
+    const result = step1Schema.safeParse({
+      login: login, 
+      password: password,
+      confirmPassword: confirmPassword,
+    });
+
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+
+      const formatted = result.error.format();
+
+      if (formatted.login?._errors[0]) {
+        fieldErrors.login = formatted.login._errors[0];
+      }
+      if (formatted.password?._errors[0]) {
+        fieldErrors.password = formatted.password._errors[0];
+      }
+      if (formatted.confirmPassword?._errors[0]) {
+        fieldErrors.confirmPassword = formatted.confirmPassword._errors[0];
+      }
+
+      setErrors(fieldErrors);
+      return;
     }
+    setErrors({});
+    // Dane poprawne
+    setIsLoggedIn(true)
+    setShowLoginModal(false)
+    setIsRegisterMode(false)
+    setLogin('')
+    setPassword('')
+    setConfirmPassword('')
+
   }
 
   const handleSwitchToRegister = () => {
@@ -214,7 +239,7 @@ function App() {
           {/* Header */}
           <div className="app-header">
             <div className="app-header__logo">Logo</div>
-            <h1 className="app-header__title" style={{ margin: 0 }}>Profile</h1>
+            <h1 className="app-header__title" style={{ margin: 0 }}>Profil</h1>
             <div style={{ display: 'flex', gap: '8px' }}>
               <button
                 onClick={() => setShowProfile(false)}
@@ -267,7 +292,7 @@ function App() {
                     cursor: 'pointer'
                   }}
                 >
-                  Set Name
+                  Ustaw nazwę
                 </button>
                 <button
                   onClick={handleLogout}
@@ -280,28 +305,28 @@ function App() {
                     cursor: 'pointer'
                   }}
                 >
-                  Logout
+                  Wyloguj
                 </button>
               </div>
             </div>
 
             {/* Center: Statistics */}
             <div className="stats-container">
-              <h3 style={{ margin: '0 0 16px 0' }}>Statistics</h3>
+              <h3 style={{ margin: '0 0 16px 0' }}>Statystyka</h3>
               <div style={{ textAlign: 'center' }}>
-                <p className="stats-item">Task Planned: {totalTasks}</p>
-                <p className="stats-item">Task Done: {completedTasks}</p>
-                <p className="stats-item">Task Overdue: {overdueTasks}</p>
+                <p className="stats-item">Zaplanowane zadania: {totalTasks}</p>
+                <p className="stats-item">Wykonane zadania: {completedTasks}</p>
+                <p className="stats-item">Zadania przeterminowane: {overdueTasks}</p>
               </div>
             </div>
 
             {/* Right: Theme Toggle */}
             <div className="theme-container">
-              <h3 style={{ margin: '0 0 16px 0' }}>Theme</h3>
+              <h3 style={{ margin: '0 0 16px 0' }}>Motyw</h3>
               <button
                 onClick={handleToggleTheme}
                 className="theme-button"
-                title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                title={isDarkMode ? 'Przełącz na jasny tryb' : 'Przełącz na ciemny tryb'}
               >
                 {isDarkMode ? '🌙' : '☀️'}
               </button>
@@ -571,29 +596,38 @@ function App() {
               {isRegisterMode ? 'Rejestracja' : 'Logowanie'}
             </h2>
             <div className="app-form-wrapper">
-              <input
-                type="text"
-                placeholder="Login"
-                value={login}
-                onChange={(e) => setLogin(e.target.value)}
-                className="app-form-input"
-              />
-              <input
-                type="password"
-                placeholder="Hasło"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="app-form-input"
-              />
-              {isRegisterMode && (
+              <div>
                 <input
+                  type="text"
+                  placeholder="Login"
+                  value={login}
+                  onChange={(e) => setLogin(e.target.value)}
+                  className="app-form-input"
+                />
+                {errors.login && <p className="error">{errors.login}</p>}
+              </div>
+              <div>
+                <input
+                  type="password"
+                  placeholder="Hasło"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="app-form-input"
+                />
+                {errors.password && <p className="error">{errors.password}</p>}
+              </div>
+              {isRegisterMode && (
+                <div><input
                   type="password"
                   placeholder="Powtórz hasło"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   className="app-form-input"
                 />
+                {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
+                </div>
               )}
+              
               <div className="app-button-group">
                 <button
                   onClick={isRegisterMode ? handleRegister : handleLogin}
