@@ -4,6 +4,8 @@ import TodoItem from './components/TodoItem'
 import { todoReducer } from './reducers/todoReducer'
 import type { FilterType } from './types/todo.types'
 import { step1Schema} from './hooks/validation_zod'
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 // Polyfill for crypto.randomUUID() for mobile browsers
 const generateUUID = (): string => {
@@ -35,17 +37,24 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [isRegisterMode, setIsRegisterMode] = useState(false)
-  const [login, setLogin] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [showProfile, setShowProfile] = useState(false)
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [userName, setUserName] = useState('User')
   const [showSetNameModal, setShowSetNameModal] = useState(false)
   const [newUserName, setNewUserName] = useState('')
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false)
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(step1Schema),
+    mode: 'onBlur',
+    reValidateMode: 'onChange'
+  });
   // Zamknij hamburger menu przy kliknięciu poza nim
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -136,53 +145,15 @@ function App() {
     setIsHamburgerOpen(!isHamburgerOpen)
   }
 
-  const handleLogin = () => {
-    if (login.trim() && password.trim()) {
-      setIsLoggedIn(true)
-      setShowLoginModal(false)
-      setLogin('')
-      setPassword('')
-      setConfirmPassword('')
-    } else {
-      alert('Wypełnij wszystkie pola')
-    }
-  }
+  const onSubmit = (data: any) => {
+    console.log(data);
 
-  const handleRegister = () => {
-    const result = step1Schema.safeParse({
-      login: login, 
-      password: password,
-      confirmPassword: confirmPassword,
-    });
+    setIsLoggedIn(true);
+    setShowLoginModal(false);
+    setIsRegisterMode(false);
 
-    if (!result.success) {
-      const fieldErrors: Record<string, string> = {};
-
-      const formatted = result.error.format();
-
-      if (formatted.login?._errors[0]) {
-        fieldErrors.login = formatted.login._errors[0];
-      }
-      if (formatted.password?._errors[0]) {
-        fieldErrors.password = formatted.password._errors[0];
-      }
-      if (formatted.confirmPassword?._errors[0]) {
-        fieldErrors.confirmPassword = formatted.confirmPassword._errors[0];
-      }
-
-      setErrors(fieldErrors);
-      return;
-    }
-    setErrors({});
-    // Dane poprawne
-    setIsLoggedIn(true)
-    setShowLoginModal(false)
-    setIsRegisterMode(false)
-    setLogin('')
-    setPassword('')
-    setConfirmPassword('')
-
-  }
+    reset(); // czyści formularz
+  };
 
   const handleSwitchToRegister = () => {
     setIsRegisterMode(true)
@@ -230,6 +201,19 @@ function App() {
     const matchesSearch = todo.task.toLowerCase().includes(searchQuery.toLowerCase())
     return matchesFilter && matchesSearch
   })
+  const passwordValue = watch('password');
+  const getPasswordStrength = (pwd: string) => {
+  let score = 0;
+
+  if (pwd.length >= 8) score++;
+  if (/[A-Z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd)) score++;
+  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+
+  if (score <= 1) return 'słabe';
+  if (score === 2 || score === 3) return 'średnie';
+  return 'silne';
+};
 
   if (showProfile) {
     return (
@@ -457,13 +441,6 @@ function App() {
         ))}
       </div>
 
-{/* Charty nie do tego projektu ale dla testu">}
-      {/* <div className="charts-panel-container">
-        <ChartsPanel>
-          <NoiseChart data={testData as SensorData[]} />
-        </ChartsPanel>
-      </div> */}
-
       {showAddModal && (
         <div className="app-modal">
           <div className="app-modal__content">
@@ -590,94 +567,143 @@ function App() {
       )}
 
       {showLoginModal && (
-        <div className="app-modal">
-          <div className="app-modal__content">
-            <h2 className="app-modal__title">
-              {isRegisterMode ? 'Rejestracja' : 'Logowanie'}
-            </h2>
-            <div className="app-form-wrapper">
-              <div>
-                <input
-                  type="text"
-                  placeholder="Login"
-                  value={login}
-                  onChange={(e) => setLogin(e.target.value)}
-                  className="app-form-input"
-                />
-                {errors.login && <p className="error">{errors.login}</p>}
-              </div>
-              <div>
-                <input
-                  type="password"
-                  placeholder="Hasło"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="app-form-input"
-                />
-                {errors.password && <p className="error">{errors.password}</p>}
-              </div>
-              {isRegisterMode && (
-                <div><input
-                  type="password"
-                  placeholder="Powtórz hasło"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="app-form-input"
-                />
-                {errors.confirmPassword && <p className="error">{errors.confirmPassword}</p>}
-                </div>
-              )}
-              
-              <div className="app-button-group">
-                <button
-                  onClick={isRegisterMode ? handleRegister : handleLogin}
-                  className="app-button-primary"
-                >
-                  {isRegisterMode ? 'Zarejestruj' : 'Zaloguj'}
-                </button>
-                <button
-                  onClick={() => setShowLoginModal(false)}
-                  className="app-button-secondary"
-                >
-                  Anuluj
-                </button>
-              </div>
-              {!isRegisterMode && (
-                <button
-                  onClick={handleSwitchToRegister}
-                  style={{
-                    padding: '8px',
-                    background: 'none',
-                    color: '#3b82f6',
-                    border: 'none',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    fontSize: '13px'
-                  }}
-                >
-                  Nie masz konta? Zarejestruj się
-                </button>
-              )}
-              {isRegisterMode && (
-                <button
-                  onClick={handleSwitchToLogin}
-                  style={{
-                    padding: '8px',
-                    background: 'none',
-                    color: '#3b82f6',
-                    border: 'none',
-                    cursor: 'pointer',
-                    textDecoration: 'underline',
-                    fontSize: '13px'
-                  }}
-                >
-                  Masz konto? Zaloguj się
-                </button>
+      <div className="app-modal">
+        <div className="app-modal__content">
+          <h2 className="app-modal__title">
+            {isRegisterMode ? 'Rejestracja' : 'Logowanie'}
+          </h2>
+
+          <form
+            className="app-form-wrapper"
+            onSubmit={handleSubmit(onSubmit)}
+          >
+            <div>
+              <label htmlFor="login">Login</label>
+              <input
+                id="login"
+                type="text"
+                placeholder="Login"
+                {...register('login')}
+                className="app-form-input"
+                required
+                aria-required="true"
+                aria-invalid={!!errors.login}
+                aria-describedby={errors.login ? 'login-error' : undefined}
+              />
+              {errors.login && (
+                <span id="login-error" role="alert" className="error">
+                  {errors.login.message}
+                </span>
               )}
             </div>
-          </div>
-        </div>
-      )}
+
+            <div>
+              <label htmlFor="password">Hasło</label>
+              <input
+                id="password"
+                type="password"
+                placeholder="Hasło"
+                {...register('password')}
+                className="app-form-input"
+                required
+                aria-required="true"
+                aria-invalid={!!errors.password}
+                aria-describedby={errors.password ? 'password-error' : 'pwd-hint'}
+              />
+
+              {isRegisterMode && (
+                <span id="pwd-hint" aria-live="polite">
+                  Siła hasła: {getPasswordStrength(watch('password') || '')}
+                </span>
+              )}
+
+              {errors.password && (
+                <span id="password-error" role="alert" className="error">
+                  {errors.password.message}
+                </span>
+              )}
+            </div>
+
+            {isRegisterMode && (
+              <div>
+                <label htmlFor="confirmPassword">Powtórz hasło</label>
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  placeholder="Powtórz hasło"
+                  {...register('confirmPassword')}
+                  className="app-form-input"
+                  required
+                  aria-required="true"
+                  aria-invalid={!!errors.confirmPassword}
+                  aria-describedby={
+                    errors.confirmPassword ? 'confirm-error' : undefined
+                  }
+                />
+                {errors.confirmPassword && (
+                  <span id="confirm-error" role="alert" className="error">
+                    {errors.confirmPassword.message}
+                  </span>
+                )}
+              </div>
+            )}
+
+            <div className="app-button-group">
+              <button
+                type="submit"
+                className="app-button-primary"
+              >
+                {isRegisterMode ? 'Zarejestruj' : 'Zaloguj'}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowLoginModal(false)}
+                className="app-button-secondary"
+              >
+                Anuluj
+              </button>
+            </div>
+
+            {!isRegisterMode && (
+              <button
+                type="button"
+                onClick={handleSwitchToRegister}
+                style={{
+                  padding: '8px',
+                  background: 'none',
+                  color: '#3b82f6',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  fontSize: '13px'
+                }}
+              >
+                Nie masz konta? Zarejestruj się
+              </button>
+            )}
+
+            {isRegisterMode && (
+              <button
+                type="button"
+                onClick={handleSwitchToLogin}
+                style={{
+                  padding: '8px',
+                  background: 'none',
+                  color: '#3b82f6',
+                  border: 'none',
+                  cursor: 'pointer',
+                  textDecoration: 'underline',
+                  fontSize: '13px'
+                }}
+              >
+                Masz konto? Zaloguj się
+              </button>
+            )}
+      </form>
+    </div>
+  </div>
+)}
       
     </div>
   )
