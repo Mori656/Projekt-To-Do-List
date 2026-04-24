@@ -217,14 +217,14 @@ function App() {
 
   if (showProfile) {
     return (
-      <div className={isDarkMode ? 'dark' : ''}>
+      <main className={isDarkMode ? 'dark' : ''}>
         {/* Profile Page */}
-        <div>
+        {/* <div> */}
           {/* Header */}
-          <div className="app-header">
+          <header className="app-header">
             <div className="app-header__logo">Logo</div>
             <h1 className="app-header__title" style={{ margin: 0 }}>Profil</h1>
-            <div style={{ display: 'flex', gap: '8px' }}>
+            <nav style={{ display: 'flex', gap: '8px' }}>
               <button
                 onClick={() => setShowProfile(false)}
                 style={{
@@ -253,13 +253,13 @@ function App() {
               >
                 👤
               </button>
-            </div>
-          </div>
+            </nav>
+          </header>
 
           {/* Main Content */}
-          <div className="profile-grid">
+          <section className="profile-grid">
             {/* Left: Avatar and Name */}
-            <div className="profile-section">
+            <section className="profile-section">
               <div className="profile-avatar">
                 👤
               </div>
@@ -292,20 +292,20 @@ function App() {
                   Wyloguj
                 </button>
               </div>
-            </div>
+            </section>
 
             {/* Center: Statistics */}
-            <div className="stats-container">
+            <section className="stats-container">
               <h3 style={{ margin: '0 0 16px 0' }}>Statystyka</h3>
               <div style={{ textAlign: 'center' }}>
                 <p className="stats-item">Zaplanowane zadania: {totalTasks}</p>
                 <p className="stats-item">Wykonane zadania: {completedTasks}</p>
                 <p className="stats-item">Zadania przeterminowane: {overdueTasks}</p>
               </div>
-            </div>
+            </section>
 
             {/* Right: Theme Toggle */}
-            <div className="theme-container">
+            <section className="theme-container">
               <h3 style={{ margin: '0 0 16px 0' }}>Motyw</h3>
               <button
                 onClick={handleToggleTheme}
@@ -315,8 +315,8 @@ function App() {
                 {isDarkMode ? '🌙' : '☀️'}
               </button>
               <p>{isDarkMode ? 'Dark Mode' : 'Light Mode'}</p>
-            </div>
-          </div>
+            </section>
+          </section>
 
           {showSetNameModal && (
             <div className="app-modal">
@@ -350,15 +350,15 @@ function App() {
               </div>
             </div>
           )}
-        </div>
-      </div>
+        {/* </div> */}
+      </main>
     )
   }
 
   return (
-    <div className={isDarkMode ? 'dark' : ''}>
+    <main className={isDarkMode ? 'dark' : ''}>
       {/* Header */}
-      <div className="app-header">
+      <header  className="app-header">
         <div className="app-header__logo">Logo</div>
         <h1 className="app-header__title" style={{ margin: 0 }}>To do list</h1>
         <button
@@ -371,7 +371,7 @@ function App() {
           <span className={`hamburger-line ${isHamburgerOpen ? 'open' : ''}`}></span>
         </button>
         {isHamburgerOpen && (
-          <div className="hamburger-menu">
+          <nav className="hamburger-menu">
             <button
               onClick={handleHomeClick}
               className="hamburger-menu-item"
@@ -398,18 +398,20 @@ function App() {
             >
               {isDarkMode ? '☀️ Tryb jasny' : '🌙 Tryb ciemny'}
             </button>
-          </div>
+          </nav>
         )}
-      </div>
+      </header>
 
       <div style={{ padding: '0' }}>
-        <div className="app-toolbar">
+        <section className="app-toolbar">
           <button
             onClick={() => setShowFilterModal(true)}
             className="app-button-secondary"
           >
             Filtry
           </button>
+          
+          <label htmlFor="search-input" className="sr-only">Szukaj zadań</label>
           <input
             type="text"
             placeholder="Szukaj zadań..."
@@ -423,10 +425,10 @@ function App() {
           >
             +
           </button>
-        </div>
+        </section>
       </div>
 
-      <div className="app-grid-container">
+      <section className="app-grid-container">
         {filteredTodos.map(todo => (
           <TodoItem
             key={todo.id}
@@ -439,7 +441,7 @@ function App() {
             onDelete={() => handleDeleteClick(todo.id)}
           />
         ))}
-      </div>
+      </section>
 
       {showAddModal && (
         <div className="app-modal">
@@ -705,7 +707,7 @@ function App() {
   </div>
 )}
       
-    </div>
+    </main>
   )
 }
 
