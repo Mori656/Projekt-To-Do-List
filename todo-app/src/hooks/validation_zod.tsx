@@ -1,31 +1,45 @@
 import { z } from 'zod';
 
+export const loginSchema = z.object({
+  login: z.string().min(2, 'Imię musi mieć co najmniej 2 znaki'),
+  password: z
+    .string()
+    .min(8, 'Hasło musi mieć co najmniej 8 znaków')
+    .regex(/[A-Z]/, 'Hasło musi zawierać wielką literę')
+    .regex(/[0-9]/, 'Hasło musi zawierać cyfrę'),
+});
 
-export const step1Schema = z
+export const registerStep1Schema = z.object({
+  login: z.string().min(2, 'Login musi mieć co najmniej 2 znaki'),
+});
 
-.object({
+export const registerStep2Schema = z.object({
+  password: z
+    .string()
+    .min(8, 'Hasło musi mieć co najmniej 8 znaków')
+    .regex(/[A-Z]/, 'Hasło musi zawierać wielką literę')
+    .regex(/[0-9]/, 'Hasło musi zawierać cyfrę'),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: 'Hasła muszą być identyczne',
+  path: ['confirmPassword'],
+});
 
-    login: z.string().min(2, 'Imie musi miec co najmniej 2 znaki'),
+export const registerStep3Schema = z.object({
+  email: z.string().email('Nieprawidłowy adres email'),
+});
 
-    password: z.string()
-
-    .min(8, 'Haslo musi miec co najmniej 8 znakow')
-
-    .regex(/[A-Z]/, 'Haslo musi zawierac wielka litere')
-
-    .regex(/[0-9]/, 'Haslo musi zawierac cyfre'),
-
+export const registerSchema = loginSchema
+  .extend({
     confirmPassword: z.string(),
+    email: z.string().email('Nieprawidłowy adres email').optional(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Hasła muszą być identyczne',
+    path: ['confirmPassword'],
+  });
 
-})
-
-.refine(
-
-    (data) => data.password === data.confirmPassword,
-
-    { message: 'Hasla musza byc identyczne', path: ['confirmPassword'] }
-
-);
-
-
-export type Step1Data = z.infer<typeof step1Schema>;
+export type Step1Data = z.infer<typeof loginSchema> | z.infer<typeof registerSchema>;
+export type RegisterStep1Data = z.infer<typeof registerStep1Schema>;
+export type RegisterStep2Data = z.infer<typeof registerStep2Schema>;
+export type RegisterStep3Data = z.infer<typeof registerStep3Schema>;
