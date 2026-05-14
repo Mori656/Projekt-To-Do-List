@@ -8,14 +8,20 @@ import AppHeader from './AppHeader';
 
 import StatsGrid from './StatsGrid';
 
+import type { Todo } from '../../types/todo.types';
 
-export default function DashboardLayout() {
+interface DashboardLayoutProps {
+  onNavigate: (view: 'todo' | 'moviebrowser') => void;
+  todos: Todo[];
+}
+
+export default function DashboardLayout({ onNavigate, todos }: DashboardLayoutProps) {
 
 return (
 
 <Box sx={{ display: 'flex', minHeight: '100vh' }}>
 
-<Sidebar />
+<Sidebar onNavigate={onNavigate} />
 
 <Box component='main' sx={{ flexGrow: 1, p: 3, bgcolor: 'background.default' }}>
 
@@ -23,7 +29,7 @@ return (
 
 <Toolbar />
 
-<StatsGrid />
+<StatsGrid todos={todos} />
 
 </Box>
 

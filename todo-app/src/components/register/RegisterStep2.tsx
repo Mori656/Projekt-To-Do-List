@@ -34,7 +34,7 @@ export default function RegisterStep2({ onNext, onBack, initialData }: RegisterS
   } = useForm<RegisterStep2Data>({
     resolver: zodResolver(registerStep2Schema),
     defaultValues: initialData || { password: '', confirmPassword: '' },
-    mode: 'onBlur',
+    mode: 'onChange',
   })
 
   const password = watch('password') || ''

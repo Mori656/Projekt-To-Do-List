@@ -172,7 +172,6 @@ export default function ProfilePage({
           onClose={() => setShowNameDialog(false)}
           fullWidth
           maxWidth="xs"
-          disableFocusTrap={false}
           disableEscapeKeyDown={false}
           PaperProps={{ sx: { borderRadius: 0 } }}
           BackdropProps={{ sx: { bgcolor: 'rgba(15, 23, 42, 0.2)', backdropFilter: 'blur(4px)' } }}

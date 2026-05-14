@@ -21,7 +21,7 @@ export default function RegisterStep1({ onNext, onCancel, initialData }: Registe
   } = useForm<RegisterStep1Data>({
     resolver: zodResolver(registerStep1Schema),
     defaultValues: initialData || { login: '' },
-    mode: 'onBlur',
+    mode: 'onChange',
   })
 
   return (

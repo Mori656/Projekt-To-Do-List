@@ -3,7 +3,6 @@ import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
-import Container from '@mui/material/Container'
 import Grid from '@mui/material/Grid'
 import Menu from '@mui/material/Menu'
 import MenuItem from '@mui/material/MenuItem'
@@ -20,6 +19,8 @@ import ProfilePage from './components/ProfilePage'
 import LoginModal from './components/LoginModal'
 import AddTodoDialog from './components/AddTodoDialog'
 import ConfirmDialog from './components/ConfirmDialog'
+import Sidebar from './components/dashboard/Sidebar'
+import MovieBrowser from './components/MovieBrowser'
 import { todoReducer } from './reducers/todoReducer'
 import { getTheme } from './theme/muiTheme'
 import type { FilterType } from './types/todo.types'
@@ -63,6 +64,7 @@ function App() {
   const [isDarkMode, setIsDarkMode] = useState(false)
   const [userName, setUserName] = useState('User')
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null)
+  const [currentView, setCurrentView] = useState<'todo' | 'moviebrowser'>('todo')
 
   const theme = useMemo(() => getTheme(isDarkMode ? 'dark' : 'light'), [isDarkMode])
   const menuOpen = Boolean(menuAnchorEl)
@@ -145,6 +147,7 @@ function App() {
 
   const handleHomeClick = () => {
     setShowProfile(false)
+    setCurrentView('todo')
     handleMenuClose()
   }
 
@@ -192,80 +195,14 @@ function App() {
     return dueDate < new Date()
   }).length
 
-  if (showProfile) {
-    return (
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <ProfilePage
-          userName={userName}
-          isDarkMode={isDarkMode}
-          onBack={handleHomeClick}
-          onLogout={handleLogout}
-          onToggleTheme={handleToggleTheme}
-          onUpdateName={setUserName}
-          totalTasks={totalTasks}
-          completedTasks={completedTasks}
-          overdueTasks={overdueTasks}
-        />
-      </ThemeProvider>
-    )
-  }
+
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Box
-        component="a"
-        href="#main-content"
-        onClick={(e) => {
-          e.preventDefault()
-          const el = document.getElementById('main-content')
-          el?.focus()
-          el?.scrollIntoView()
-        }}
-        sx={{
-          position: 'absolute',
-          top: '-60px',
-          left: 0,
-          right: 0,
-          bgcolor: 'primary.main',
-          color: 'primary.contrastText',
-          p: 2,
-          textDecoration: 'none',
-          zIndex: 10000,
-          transition: 'top 0.3s ease-in-out',
-          fontSize: '1rem',
-          textAlign: 'center',
-          display: 'block',
-          '&:focus': {
-            top: 0,
-            outline: '3px solid',
-            outlineColor: 'primary.contrastText',
-          },
-        }}
-      >
-        Przejdź do głównej zawartości
-      </Box>
-      <div
-        role="status"
-        aria-live="polite"
-        aria-atomic="true"
-        style={{
-          position: 'absolute',
-          left: '-10000px',
-          width: '1px',
-          height: '1px',
-          overflow: 'hidden',
-        }}
-        id="aria-live-region"
-      />
-      <Box
-        component="main"
-        id="main-content"
-        tabIndex={-1}
-        sx={{ minHeight: '100vh', backgroundColor: 'background.default', color: 'text.primary', pb: 6 }}
-      >
-        <Container maxWidth="lg" sx={{ py: { xs: 3, md: 5 } }}>
+      <Box sx={{ display: 'flex', minHeight: '100vh' }}>
+        <Sidebar onNavigate={setCurrentView} />
+        <Box component="main" sx={{ flexGrow: 1, p: 2, bgcolor: 'background.default', overflow: 'auto' }}>
           <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
             <IconButton
               onClick={handleMenuOpen}
@@ -276,97 +213,117 @@ function App() {
             </IconButton>
           </Box>
 
-          <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, textAlign: 'center' }}>
-              TO DO LIST
-            </Typography>
-          </Box>
+          {!showProfile && currentView === 'todo' && (
+            <>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                <Typography variant="h4" sx={{ fontWeight: 700, textAlign: 'center' }}>
+                  TO DO LIST
+                </Typography>
+              </Box>
 
-          <Paper
-            elevation={1}
-            sx={{
-              p: { xs: 2, md: 3 },
-              mb: 4,
-              borderRadius: 3,
-              border: '1px solid',
-              borderColor: 'divider',
-              maxWidth: 920,
-              mx: 'auto',
-            }}
-          >
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
-              <TextField
-                value={searchQuery}
-                onChange={(event) => setSearchQuery(event.target.value)}
-                placeholder="Wyszukaj zadanie..."
-                fullWidth
-                size="medium"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search size={18} />
-                    </InputAdornment>
-                  ),
+              <Paper
+                elevation={1}
+                sx={{
+                  p: { xs: 2, md: 3 },
+                  mb: 4,
+                  borderRadius: 3,
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  maxWidth: 920,
+                  mx: 'auto',
                 }}
-                sx={{ backgroundColor: 'background.paper' }}
-              />
-              <Button
-                variant="contained"
-                color="primary"
-                startIcon={<Plus size={16} />}
-                onClick={() => setShowAddModal(true)}
-                sx={{ whiteSpace: 'nowrap' }}
               >
-                Dodaj zadanie
-              </Button>
-            </Stack>
-
-            <ToggleButtonGroup
-              value={filter}
-              exclusive
-              onChange={(_, value) => {
-                if (value) setFilter(value)
-              }}
-              aria-label="Filtry zadań"
-              sx={{ mt: 2, flexWrap: 'wrap', gap: 1 }}
-            >
-              {filterOptions.map((option) => (
-                <ToggleButton key={option.value} value={option.value} aria-label={option.label}>
-                  {option.label}
-                </ToggleButton>
-              ))}
-            </ToggleButtonGroup>
-          </Paper>
-
-          <Grid container spacing={3}>
-            {filteredTodos.length > 0 ? (
-              filteredTodos.map((todo) => (
-                <Grid item xs={12} sm={6} md={4} key={todo.id}>
-                  <TodoItem
-                    task={todo.task}
-                    timeLimit={todo.timeLimit}
-                    importance={todo.importance}
-                    completed={todo.completed}
-                    onToggle={() => handleToggle(todo.id)}
-                    onEdit={() => handleEdit(todo.id)}
-                    onDelete={() => handleDeleteClick(todo.id)}
+                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                  <TextField
+                    value={searchQuery}
+                    onChange={(event) => setSearchQuery(event.target.value)}
+                    placeholder="Wyszukaj zadanie..."
+                    fullWidth
+                    size="medium"
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search size={18} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{ backgroundColor: 'background.paper' }}
                   />
-                </Grid>
-              ))
-            ) : (
-              <Grid item xs={12}>
-                <Paper
-                  elevation={0}
-                  sx={{ p: 4, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 3 }}
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    startIcon={<Plus size={16} />}
+                    onClick={() => setShowAddModal(true)}
+                    sx={{ whiteSpace: 'nowrap' }}
+                  >
+                    Dodaj zadanie
+                  </Button>
+                </Stack>
+
+                <ToggleButtonGroup
+                  value={filter}
+                  exclusive
+                  onChange={(_, value) => {
+                    if (value) setFilter(value)
+                  }}
+                  aria-label="Filtry zadań"
+                  sx={{ mt: 2, flexWrap: 'wrap', gap: 1 }}
                 >
-                  <Typography variant="h6">Brak pasujących zadań</Typography>
-                  <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
-                    Spróbuj zmienić filtry lub dodaj nowe zadanie.
-                  </Typography>
-                </Paper>
+                  {filterOptions.map((option) => (
+                    <ToggleButton key={option.value} value={option.value} aria-label={option.label}>
+                      {option.label}
+                    </ToggleButton>
+                  ))}
+                </ToggleButtonGroup>
+              </Paper>
+
+              <Grid container spacing={3}>
+                {filteredTodos.length > 0 ? (
+                  filteredTodos.map((todo) => (
+                    <Grid item xs={12} sm={6} md={4} key={todo.id}>
+                      <TodoItem
+                        task={todo.task}
+                        timeLimit={todo.timeLimit}
+                        importance={todo.importance}
+                        completed={todo.completed}
+                        onToggle={() => handleToggle(todo.id)}
+                        onEdit={() => handleEdit(todo.id)}
+                        onDelete={() => handleDeleteClick(todo.id)}
+                      />
+                    </Grid>
+                  ))
+                ) : (
+                  <Grid item xs={12}>
+                    <Paper
+                      elevation={0}
+                      sx={{ p: 4, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 3 }}
+                    >
+                      <Typography variant="h6">Brak pasujących zadań</Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
+                        Spróbuj zmienić filtry lub dodaj nowe zadanie.
+                      </Typography>
+                    </Paper>
+                  </Grid>
+                )}
               </Grid>
-            )}
-          </Grid>
+            </>
+          )}
+
+          {showProfile && (
+            <ProfilePage
+              userName={userName}
+              isDarkMode={isDarkMode}
+              onBack={handleHomeClick}
+              onLogout={handleLogout}
+              onToggleTheme={handleToggleTheme}
+              onUpdateName={setUserName}
+              totalTasks={totalTasks}
+              completedTasks={completedTasks}
+              overdueTasks={overdueTasks}
+            />
+          )}
+
+          {currentView === 'moviebrowser' && <MovieBrowser />}
 
           <Menu
             anchorEl={menuAnchorEl}
@@ -374,7 +331,6 @@ function App() {
             onClose={handleMenuClose}
             PaperProps={{ sx: { backgroundColor: 'background.paper' } }}
           >
-            <MenuItem onClick={handleHomeClick}>🏠 Główna strona</MenuItem>
             <MenuItem onClick={handleProfileClick}>{isLoggedIn ? '👤 Profil' : '🔐 Logowanie'}</MenuItem>
             {isLoggedIn && <MenuItem onClick={handleLogout}>🚪 Wyloguj</MenuItem>}
             <MenuItem
@@ -402,7 +358,7 @@ function App() {
             onSubmit={handleLoginSubmit}
             onSwitchMode={handleSwitchMode}
           />
-        </Container>
+        </Box>
       </Box>
     </ThemeProvider>
   )
