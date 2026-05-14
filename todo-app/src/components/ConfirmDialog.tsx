@@ -28,7 +28,6 @@ export default function ConfirmDialog({
       maxWidth="xs"
       aria-labelledby="confirm-dialog-title"
       aria-describedby="confirm-dialog-description"
-      disableFocusTrap={false}
       disableEscapeKeyDown={false}
       PaperProps={{ sx: { borderRadius: 0 } }}
       BackdropProps={{ sx: { bgcolor: 'rgba(15, 23, 42, 0.16)', backdropFilter: 'blur(4px)' } }}

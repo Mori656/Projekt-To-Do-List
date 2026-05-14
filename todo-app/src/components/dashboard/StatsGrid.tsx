@@ -6,13 +6,13 @@ import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 import StatsCard from './StatsCard';
 
-import { useTodo } from '../../context/TodoContext';
+import type { Todo } from '../../types/todo.types';
 
+interface StatsGridProps {
+  todos: Todo[];
+}
 
-export default function StatsGrid() {
-
-const { todos } = useTodo();
-
+export default function StatsGrid({ todos }: StatsGridProps) {
 
 // TODO 2: Oblicz wartości na podstawie todos
 

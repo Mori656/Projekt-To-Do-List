@@ -51,7 +51,7 @@ export default function LoginModal({
       login: '',
       password: '',
     },
-    mode: 'onBlur',
+    mode: 'onChange',
     reValidateMode: 'onChange',
   })
 
@@ -83,7 +83,6 @@ export default function LoginModal({
       maxWidth={isRegisterMode ? 'sm' : 'xs'}
       aria-labelledby="login-dialog-title"
       aria-describedby="login-dialog-description"
-      disableFocusTrap={false}
       disableEscapeKeyDown={false}
       PaperProps={{ sx: { borderRadius: 0, overflow: 'hidden' } }}
       BackdropProps={{ sx: { bgcolor: 'rgba(15, 23, 42, 0.22)', backdropFilter: 'blur(6px)' } }}
