@@ -91,7 +91,6 @@
 @media (min-width: 1024px) {
   #root {
     max-width: 1126px;
-    width: 1126px;
     border-inline: 1px solid var(--border);
   }
 }

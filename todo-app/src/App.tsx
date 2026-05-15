@@ -20,7 +20,7 @@ import LoginModal from './components/LoginModal'
 import AddTodoDialog from './components/AddTodoDialog'
 import ConfirmDialog from './components/ConfirmDialog'
 import Sidebar from './components/dashboard/Sidebar'
-import MovieBrowser from './components/MovieBrowser'
+import MovieBrowser from './components/movieBrowser/MovieBrowser'
 import { todoReducer } from './reducers/todoReducer'
 import { getTheme } from './theme/muiTheme'
 import type { FilterType } from './types/todo.types'
@@ -195,169 +195,170 @@ function App() {
     return dueDate < new Date()
   }).length
 
-
-
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Box sx={{ display: 'flex', minHeight: '100vh' }}>
-        <Sidebar onNavigate={setCurrentView} />
-        <Box component="main" sx={{ flexGrow: 1, p: 2, bgcolor: 'background.default', overflow: 'auto' }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <IconButton
-              onClick={handleMenuOpen}
-              className="menu-anchor"
-              sx={{ border: '1px solid', borderColor: 'divider', color: 'text.primary' }}
+        <Box component="aside" sx={{ maxWidth: 240, flexShrink: 0 }}>
+          <Sidebar onNavigate={setCurrentView} />
+        </Box>
+        <Box component="main" sx={{ flexGrow: 1, p: 2, bgcolor: 'background.default', overflow: 'auto', minWidth: 0, }}>
+          <Box sx={{ mx: 'auto', width: '100%' ,maxWidth: 1200, }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+              <IconButton
+                onClick={handleMenuOpen}
+                className="menu-anchor"
+                sx={{ border: '1px solid', borderColor: 'divider', color: 'text.primary' }}
+              >
+                <MenuIcon size={20} />
+              </IconButton>
+            </Box>
+
+            {!showProfile && currentView === 'todo' && (
+              <>
+                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 700, textAlign: 'center' }}>
+                    TO DO LIST
+                  </Typography>
+                </Box>
+
+                <Paper
+                  elevation={1}
+                  sx={{
+                    p: { xs: 2, md: 3 },
+                    mb: 4,
+                    borderRadius: 3,
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    mx: 'auto',
+                  }}
+                >
+                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                    <TextField
+                      value={searchQuery}
+                      onChange={(event) => setSearchQuery(event.target.value)}
+                      placeholder="Wyszukaj zadanie..."
+                      fullWidth
+                      size="medium"
+                      InputProps={{
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <Search size={18} />
+                          </InputAdornment>
+                        ),
+                      }}
+                      sx={{ backgroundColor: 'background.paper' }}
+                    />
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      startIcon={<Plus size={16} />}
+                      onClick={() => setShowAddModal(true)}
+                      sx={{ whiteSpace: 'nowrap' }}
+                    >
+                      Dodaj zadanie
+                    </Button>
+                  </Stack>
+
+                  <ToggleButtonGroup
+                    value={filter}
+                    exclusive
+                    onChange={(_, value) => {
+                      if (value) setFilter(value)
+                    }}
+                    aria-label="Filtry zadań"
+                    sx={{ mt: 2, flexWrap: 'wrap', gap: 1 }}
+                  >
+                    {filterOptions.map((option) => (
+                      <ToggleButton key={option.value} value={option.value} aria-label={option.label}>
+                        {option.label}
+                      </ToggleButton>
+                    ))}
+                  </ToggleButtonGroup>
+                </Paper>
+
+                <Grid container spacing={3}>
+                  {filteredTodos.length > 0 ? (
+                    filteredTodos.map((todo) => (
+                      <Grid item xs={12} sm={6} md={4} key={todo.id}>
+                        <TodoItem
+                          task={todo.task}
+                          timeLimit={todo.timeLimit}
+                          importance={todo.importance}
+                          completed={todo.completed}
+                          onToggle={() => handleToggle(todo.id)}
+                          onEdit={() => handleEdit(todo.id)}
+                          onDelete={() => handleDeleteClick(todo.id)}
+                        />
+                      </Grid>
+                    ))
+                  ) : (
+                    <Grid item xs={12}>
+                      <Paper
+                        elevation={0}
+                        sx={{ p: 4, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 3 }}
+                      >
+                        <Typography variant="h6">Brak pasujących zadań</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
+                          Spróbuj zmienić filtry lub dodaj nowe zadanie.
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                  )}
+                </Grid>
+              </>
+            )}
+
+            {showProfile && (
+              <ProfilePage
+                userName={userName}
+                isDarkMode={isDarkMode}
+                onBack={handleHomeClick}
+                onLogout={handleLogout}
+                onToggleTheme={handleToggleTheme}
+                onUpdateName={setUserName}
+                totalTasks={totalTasks}
+                completedTasks={completedTasks}
+                overdueTasks={overdueTasks}
+              />
+            )}
+
+            {currentView === 'moviebrowser' && <MovieBrowser />}
+
+            <Menu
+              anchorEl={menuAnchorEl}
+              open={menuOpen}
+              onClose={handleMenuClose}
+              PaperProps={{ sx: { backgroundColor: 'background.paper' } }}
             >
-              <MenuIcon size={20} />
-            </IconButton>
-          </Box>
-
-          {!showProfile && currentView === 'todo' && (
-            <>
-              <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-                <Typography variant="h4" sx={{ fontWeight: 700, textAlign: 'center' }}>
-                  TO DO LIST
-                </Typography>
-              </Box>
-
-              <Paper
-                elevation={1}
-                sx={{
-                  p: { xs: 2, md: 3 },
-                  mb: 4,
-                  borderRadius: 3,
-                  border: '1px solid',
-                  borderColor: 'divider',
-                  maxWidth: 920,
-                  mx: 'auto',
+              <MenuItem onClick={handleProfileClick}>{isLoggedIn ? '👤 Profil' : '🔐 Logowanie'}</MenuItem>
+              {isLoggedIn && <MenuItem onClick={handleLogout}>🚪 Wyloguj</MenuItem>}
+              <MenuItem
+                onClick={() => {
+                  handleToggleTheme()
+                  handleMenuClose()
                 }}
               >
-                <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
-                  <TextField
-                    value={searchQuery}
-                    onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="Wyszukaj zadanie..."
-                    fullWidth
-                    size="medium"
-                    InputProps={{
-                      startAdornment: (
-                        <InputAdornment position="start">
-                          <Search size={18} />
-                        </InputAdornment>
-                      ),
-                    }}
-                    sx={{ backgroundColor: 'background.paper' }}
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<Plus size={16} />}
-                    onClick={() => setShowAddModal(true)}
-                    sx={{ whiteSpace: 'nowrap' }}
-                  >
-                    Dodaj zadanie
-                  </Button>
-                </Stack>
+                {isDarkMode ? '☀️ Tryb jasny' : '🌙 Tryb ciemny'}
+              </MenuItem>
+            </Menu>
 
-                <ToggleButtonGroup
-                  value={filter}
-                  exclusive
-                  onChange={(_, value) => {
-                    if (value) setFilter(value)
-                  }}
-                  aria-label="Filtry zadań"
-                  sx={{ mt: 2, flexWrap: 'wrap', gap: 1 }}
-                >
-                  {filterOptions.map((option) => (
-                    <ToggleButton key={option.value} value={option.value} aria-label={option.label}>
-                      {option.label}
-                    </ToggleButton>
-                  ))}
-                </ToggleButtonGroup>
-              </Paper>
-
-              <Grid container spacing={3}>
-                {filteredTodos.length > 0 ? (
-                  filteredTodos.map((todo) => (
-                    <Grid item xs={12} sm={6} md={4} key={todo.id}>
-                      <TodoItem
-                        task={todo.task}
-                        timeLimit={todo.timeLimit}
-                        importance={todo.importance}
-                        completed={todo.completed}
-                        onToggle={() => handleToggle(todo.id)}
-                        onEdit={() => handleEdit(todo.id)}
-                        onDelete={() => handleDeleteClick(todo.id)}
-                      />
-                    </Grid>
-                  ))
-                ) : (
-                  <Grid item xs={12}>
-                    <Paper
-                      elevation={0}
-                      sx={{ p: 4, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 3 }}
-                    >
-                      <Typography variant="h6">Brak pasujących zadań</Typography>
-                      <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
-                        Spróbuj zmienić filtry lub dodaj nowe zadanie.
-                      </Typography>
-                    </Paper>
-                  </Grid>
-                )}
-              </Grid>
-            </>
-          )}
-
-          {showProfile && (
-            <ProfilePage
-              userName={userName}
-              isDarkMode={isDarkMode}
-              onBack={handleHomeClick}
-              onLogout={handleLogout}
-              onToggleTheme={handleToggleTheme}
-              onUpdateName={setUserName}
-              totalTasks={totalTasks}
-              completedTasks={completedTasks}
-              overdueTasks={overdueTasks}
+            <AddTodoDialog open={showAddModal} onClose={() => setShowAddModal(false)} onAdd={handleAddTodo} />
+            <ConfirmDialog
+              open={showConfirm}
+              title="Usuń zadanie"
+              message="Czy na pewno chcesz usunąć to zadanie?"
+              onConfirm={confirmDelete}
+              onCancel={cancelDelete}
             />
-          )}
-
-          {currentView === 'moviebrowser' && <MovieBrowser />}
-
-          <Menu
-            anchorEl={menuAnchorEl}
-            open={menuOpen}
-            onClose={handleMenuClose}
-            PaperProps={{ sx: { backgroundColor: 'background.paper' } }}
-          >
-            <MenuItem onClick={handleProfileClick}>{isLoggedIn ? '👤 Profil' : '🔐 Logowanie'}</MenuItem>
-            {isLoggedIn && <MenuItem onClick={handleLogout}>🚪 Wyloguj</MenuItem>}
-            <MenuItem
-              onClick={() => {
-                handleToggleTheme()
-                handleMenuClose()
-              }}
-            >
-              {isDarkMode ? '☀️ Tryb jasny' : '🌙 Tryb ciemny'}
-            </MenuItem>
-          </Menu>
-
-          <AddTodoDialog open={showAddModal} onClose={() => setShowAddModal(false)} onAdd={handleAddTodo} />
-          <ConfirmDialog
-            open={showConfirm}
-            title="Usuń zadanie"
-            message="Czy na pewno chcesz usunąć to zadanie?"
-            onConfirm={confirmDelete}
-            onCancel={cancelDelete}
-          />
-          <LoginModal
-            open={showLoginModal}
-            isRegisterMode={isRegisterMode}
-            onClose={() => setShowLoginModal(false)}
-            onSubmit={handleLoginSubmit}
-            onSwitchMode={handleSwitchMode}
-          />
+            <LoginModal
+              open={showLoginModal}
+              isRegisterMode={isRegisterMode}
+              onClose={() => setShowLoginModal(false)}
+              onSubmit={handleLoginSubmit}
+              onSwitchMode={handleSwitchMode}
+            />
+          </Box>{/* koniec centrowanego kontenera */}
         </Box>
       </Box>
     </ThemeProvider>
