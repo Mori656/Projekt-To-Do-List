@@ -10,7 +10,7 @@ import {
   Typography,
 } from '@mui/material';
 
-import { useCharacters } from '../../hooks/useCharaters';
+import { useCharacters } from '../../hooks/useCharacters';
 
 const RickAndMorty = () => {
   const [page, setPage] = useState(1);
