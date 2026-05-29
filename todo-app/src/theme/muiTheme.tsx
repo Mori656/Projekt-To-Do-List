@@ -86,7 +86,19 @@ const getDesignTokens = (mode: PaletteMode) => ({
           borderRadius: 14,
           textTransform: 'none',
           padding: '10px 18px',
+
+          transition: 'background-color 0.2s ease, transform 0.2s ease',
+
+          '&:hover': {
+            transform: 'translateY(-1px)',
+          },
+
+          '&:focus-visible': {
+            outline: '2px solid #4f46e5',
+            outlineOffset: '2px',
+          },
         },
+
         containedPrimary: {
           boxShadow: '0 12px 24px rgba(79, 70, 229, 0.16)',
         },
@@ -98,6 +110,20 @@ const getDesignTokens = (mode: PaletteMode) => ({
           borderRadius: 18,
           boxShadow: '0 18px 40px rgba(15, 23, 42, 0.08)',
           border: '1px solid transparent',
+
+          transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+
+          willChange: 'transform',
+
+          '&:hover': {
+            transform: 'translateY(-3px)',
+            boxShadow: '0 20px 40px rgba(79, 70, 229, 0.16)',
+          },
+
+          '&:focus-visible': {
+            outline: '2px solid #4f46e5',
+            outlineOffset: '2px',
+          },
         },
       },
     },
