@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "accessibility:lighthouse": "node ./scripts/lighthouse-report.js",
+    "accessibility:axe": "node ./scripts/axe-report.js",
+    "accessibility:pa11y": "pa11y http://localhost:3000 --reporter json > ./reports/pa11y-report.json",
+    "accessibility:reports": "npm run accessibility:lighthouse && npm run accessibility:axe && npm run accessibility:pa11y"
   },
   "dependencies": {
     "@emotion/react": "^11.11.0",
@@ -41,7 +45,11 @@
     "tailwindcss": "^4.2.2",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.0",
-    "vite": "^8.0.1"
+    "vite": "^8.0.1",
+    "@axe-core/cli": "^4.2.1",
+    "lighthouse": "^11.0.0",
+    "pa11y": "^6.0.0",
+    "puppeteer": "^24.0.0"
   },
   "msw": {
     "workerDirectory": [
