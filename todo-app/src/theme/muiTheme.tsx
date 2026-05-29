@@ -1,5 +1,6 @@
 ﻿import { createTheme } from '@mui/material/styles'
 import type { PaletteMode } from '@mui/material'
+import { transform } from 'zod'
 
 const palette = {
   light: {
@@ -70,6 +71,10 @@ const getDesignTokens = (mode: PaletteMode) => ({
         body: {
           backgroundColor: mode === 'light' ? '#f3f6fb' : '#060b16',
           color: mode === 'light' ? '#0f172a' : '#e2e8f0',
+          // poprawa renderowania czcionek -> zmniejsza efekt „rozmycia”
+          WebkitFontSmoothing: 'antialiased',
+          MozOsxFontSmoothing: 'grayscale',
+          textRendering: 'optimizeLegibility',
         },
       },
     },
@@ -110,14 +115,10 @@ const getDesignTokens = (mode: PaletteMode) => ({
           borderRadius: 18,
           boxShadow: '0 18px 40px rgba(15, 23, 42, 0.08)',
           border: '1px solid transparent',
-
           transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-
-          willChange: 'transform',
-
           '&:hover': {
-            transform: 'translateY(-3px)',
-            boxShadow: '0 20px 40px rgba(79, 70, 229, 0.16)',
+            transform: 'scale(1.03) translateY(-2px)',
+            boxShadow: '0 24px 48px rgba(79, 70, 229, 0.18)',
           },
 
           '&:focus-visible': {

@@ -1,4 +1,6 @@
 ﻿import { useEffect, useMemo, useReducer, useState, type MouseEvent } from 'react'
+import { AnimatePresence, motion, easeOut, easeIn } from 'framer-motion'
+import type { Variants } from 'framer-motion'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import Box from '@mui/material/Box'
@@ -68,6 +70,20 @@ function App() {
 
   const theme = useMemo(() => getTheme(isDarkMode ? 'dark' : 'light'), [isDarkMode])
   const menuOpen = Boolean(menuAnchorEl)
+
+  const pageVariants: Variants = {
+  initial: { opacity: 0, x: -16 },
+  animate: {
+    opacity: 1,
+    x: 0,
+    transition: { duration: 0.28, ease: easeOut }
+  },
+  exit: {
+    opacity: 0,
+    x: 16,
+    transition: { duration: 0.18, ease: easeIn }
+  }
+}
 
   const handleMenuOpen = (event: MouseEvent<HTMLButtonElement>) => {
     setMenuAnchorEl(event.currentTarget)
@@ -214,116 +230,133 @@ function App() {
               </IconButton>
             </Box>
 
-            {!showProfile && currentView === 'todo' && (
-              <>
-                <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-                  <Typography variant="h4" sx={{ fontWeight: 700, textAlign: 'center' }}>
-                    TO DO LIST
-                  </Typography>
-                </Box>
-
-                <Paper
-                  elevation={1}
-                  sx={{
-                    p: { xs: 2, md: 3 },
-                    mb: 4,
-                    borderRadius: 3,
-                    border: '1px solid',
-                    borderColor: 'divider',
-                    mx: 'auto',
-                  }}
+            <AnimatePresence mode="wait">
+              {(!showProfile && currentView === 'todo') && (
+                <motion.div
+                  key="todo"
+                  variants={pageVariants}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  style={{ width: '100%' }}
                 >
-                  <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
-                    <TextField
-                      value={searchQuery}
-                      onChange={(event) => setSearchQuery(event.target.value)}
-                      placeholder="Wyszukaj zadanie..."
-                      fullWidth
-                      size="medium"
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <Search size={18} />
-                          </InputAdornment>
-                        ),
+                  <>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
+                      <Typography variant="h4" sx={{ fontWeight: 700, textAlign: 'center' }}>
+                        TO DO LIST
+                      </Typography>
+                    </Box>
+
+                    <Paper
+                      elevation={1}
+                      sx={{
+                        p: { xs: 2, md: 3 },
+                        mb: 4,
+                        borderRadius: 3,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        mx: 'auto',
                       }}
-                      sx={{ backgroundColor: 'background.paper' }}
-                    />
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      startIcon={<Plus size={16} />}
-                      onClick={() => setShowAddModal(true)}
-                      sx={{ whiteSpace: 'nowrap' }}
                     >
-                      Dodaj zadanie
-                    </Button>
-                  </Stack>
-
-                  <ToggleButtonGroup
-                    value={filter}
-                    exclusive
-                    onChange={(_, value) => {
-                      if (value) setFilter(value)
-                    }}
-                    aria-label="Filtry zadań"
-                    sx={{ mt: 2, flexWrap: 'wrap', gap: 1 }}
-                  >
-                    {filterOptions.map((option) => (
-                      <ToggleButton key={option.value} value={option.value} aria-label={option.label}>
-                        {option.label}
-                      </ToggleButton>
-                    ))}
-                  </ToggleButtonGroup>
-                </Paper>
-
-                <Grid container spacing={3}>
-                  {filteredTodos.length > 0 ? (
-                    filteredTodos.map((todo) => (
-                      <Grid item xs={12} sm={6} md={4} key={todo.id}>
-                        <TodoItem
-                          task={todo.task}
-                          timeLimit={todo.timeLimit}
-                          importance={todo.importance}
-                          completed={todo.completed}
-                          onToggle={() => handleToggle(todo.id)}
-                          onEdit={() => handleEdit(todo.id)}
-                          onDelete={() => handleDeleteClick(todo.id)}
+                      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} alignItems="center">
+                        <TextField
+                          value={searchQuery}
+                          onChange={(event) => setSearchQuery(event.target.value)}
+                          placeholder="Wyszukaj zadanie..."
+                          fullWidth
+                          size="medium"
+                          InputProps={{
+                            startAdornment: (
+                              <InputAdornment position="start">
+                                <Search size={18} />
+                              </InputAdornment>
+                            ),
+                          }}
+                          sx={{ backgroundColor: 'background.paper' }}
                         />
-                      </Grid>
-                    ))
-                  ) : (
-                    <Grid item xs={12}>
-                      <Paper
-                        elevation={0}
-                        sx={{ p: 4, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 3 }}
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          startIcon={<Plus size={16} />}
+                          onClick={() => setShowAddModal(true)}
+                          sx={{ whiteSpace: 'nowrap' }}
+                        >
+                          Dodaj zadanie
+                        </Button>
+                      </Stack>
+
+                      <ToggleButtonGroup
+                        value={filter}
+                        exclusive
+                        onChange={(_, value) => {
+                          if (value) setFilter(value)
+                        }}
+                        aria-label="Filtry zadań"
+                        sx={{ mt: 2, flexWrap: 'wrap', gap: 1 }}
                       >
-                        <Typography variant="h6">Brak pasujących zadań</Typography>
-                        <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
-                          Spróbuj zmienić filtry lub dodaj nowe zadanie.
-                        </Typography>
-                      </Paper>
+                        {filterOptions.map((option) => (
+                          <ToggleButton key={option.value} value={option.value} aria-label={option.label}>
+                            {option.label}
+                          </ToggleButton>
+                        ))}
+                      </ToggleButtonGroup>
+                    </Paper>
+
+                    <Grid container spacing={3}>
+                      {filteredTodos.length > 0 ? (
+                        filteredTodos.map((todo) => (
+                          <Grid item xs={12} sm={6} md={4} key={todo.id}>
+                            <TodoItem
+                              task={todo.task}
+                              timeLimit={todo.timeLimit}
+                              importance={todo.importance}
+                              completed={todo.completed}
+                              onToggle={() => handleToggle(todo.id)}
+                              onEdit={() => handleEdit(todo.id)}
+                              onDelete={() => handleDeleteClick(todo.id)}
+                            />
+                          </Grid>
+                        ))
+                      ) : (
+                        <Grid item xs={12}>
+                          <Paper
+                            elevation={0}
+                            sx={{ p: 4, textAlign: 'center', backgroundColor: 'background.paper', borderRadius: 3 }}
+                          >
+                            <Typography variant="h6">Brak pasujących zadań</Typography>
+                            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
+                              Spróbuj zmienić filtry lub dodaj nowe zadanie.
+                            </Typography>
+                          </Paper>
+                        </Grid>
+                      )}
                     </Grid>
-                  )}
-                </Grid>
-              </>
-            )}
+                  </>
+                </motion.div>
+              )}
 
-            {showProfile && (
-              <ProfilePage
-                userName={userName}
-                isDarkMode={isDarkMode}
-                onBack={handleHomeClick}
-                onLogout={handleLogout}
-                onToggleTheme={handleToggleTheme}
-                onUpdateName={setUserName}
-                totalTasks={totalTasks}
-                completedTasks={completedTasks}
-                overdueTasks={overdueTasks}
-              />
-            )}
+              {showProfile && (
+                <motion.div key="profile" variants={pageVariants} initial="initial" animate="animate" exit="exit" style={{ width: '100%' }}>
+                  <ProfilePage
+                    userName={userName}
+                    isDarkMode={isDarkMode}
+                    onBack={handleHomeClick}
+                    onLogout={handleLogout}
+                    onToggleTheme={handleToggleTheme}
+                    onUpdateName={setUserName}
+                    totalTasks={totalTasks}
+                    completedTasks={completedTasks}
+                    overdueTasks={overdueTasks}
+                  />
+                </motion.div>
+              )}
 
-            {currentView === 'moviebrowser' && <MovieBrowser />}
+              {currentView === 'moviebrowser' && (
+                <motion.div key="moviebrowser" variants={pageVariants} initial="initial" animate="animate" exit="exit" style={{ width: '100%' }}>
+                  <MovieBrowser />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <Menu
               anchorEl={menuAnchorEl}
