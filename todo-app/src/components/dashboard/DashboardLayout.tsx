@@ -13,15 +13,16 @@ import type { Todo } from '../../types/todo.types';
 interface DashboardLayoutProps {
   onNavigate: (view: 'todo' | 'moviebrowser') => void;
   todos: Todo[];
+  selectedView: 'todo' | 'moviebrowser' | null;
 }
 
-export default function DashboardLayout({ onNavigate, todos }: DashboardLayoutProps) {
+export default function DashboardLayout({ onNavigate, todos, selectedView }: DashboardLayoutProps) {
 
 return (
 
 <Box sx={{ display: 'flex', minHeight: '100vh' }}>
 
-<Sidebar onNavigate={onNavigate} />
+<Sidebar onNavigate={onNavigate} selectedView={selectedView} />
 
 <Box component='main' sx={{ flexGrow: 1, p: 3, bgcolor: 'background.default' }}>
 

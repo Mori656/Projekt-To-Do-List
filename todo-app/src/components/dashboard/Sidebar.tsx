@@ -15,9 +15,10 @@ import { CheckSquare2, Film } from 'lucide-react';
 
 interface SidebarProps {
   onNavigate: (view: 'todo' | 'moviebrowser') => void;
+  selectedView: 'todo' | 'moviebrowser' | null;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ onNavigate }) => {
+const Sidebar: React.FC<SidebarProps> = ({ onNavigate, selectedView }) => {
   return (
     <Drawer
     variant="permanent"
@@ -62,6 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavigate }) => {
       <List sx={{ px: 1 }}>
         <ListItem disablePadding>
           <ListItemButton
+            selected={selectedView === 'todo'}
             onClick={() => onNavigate('todo')}
             sx={{
               borderRadius: 1,
@@ -95,6 +97,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onNavigate }) => {
         </ListItem>
         <ListItem disablePadding>
           <ListItemButton
+            selected={selectedView === 'moviebrowser'}
             onClick={() => onNavigate('moviebrowser')}
             sx={{
               borderRadius: 1,

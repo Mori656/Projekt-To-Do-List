@@ -16,7 +16,6 @@ import Avatar from '@mui/material/Avatar'
 type ProfilePageProps = {
   userName: string
   isDarkMode: boolean
-  onBack: () => void
   onLogout: () => void
   onToggleTheme: () => void
   onUpdateName: (name: string) => void
@@ -28,7 +27,6 @@ type ProfilePageProps = {
 export default function ProfilePage({
   userName,
   isDarkMode,
-  onBack,
   onLogout,
   onToggleTheme,
   onUpdateName,
@@ -66,14 +64,6 @@ export default function ProfilePage({
           >
             Profil
           </Typography>
-          <Stack direction="row" spacing={2} flexWrap="wrap" role="group" aria-label="Akcje profilu">
-            <Button variant="outlined" onClick={onBack} aria-label="Powrót na główną stronę">
-              Główna
-            </Button>
-            <Button variant="contained" onClick={onLogout} aria-label="Wyloguj z konta">
-              Wyloguj
-            </Button>
-          </Stack>
         </Box>
 
         <Grid container spacing={3} role="region" aria-label="Sekcje profilu użytkownika">
