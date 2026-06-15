@@ -1,14 +1,16 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 
-import App from './App';
+import App from './App'
+import { TodoProvider } from './context/TodoContext'
 
 import {
   QueryClient,
   QueryClientProvider,
-} from '@tanstack/react-query';
+} from '@tanstack/react-query'
 
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,11 +31,15 @@ async function start() {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <BrowserRouter>
+          <TodoProvider>
+            <App />
+          </TodoProvider>
+        </BrowserRouter>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </StrictMode>
-  );
+  )
 }
 
 start();
