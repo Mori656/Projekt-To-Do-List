@@ -4,7 +4,7 @@ Aplikacja webowa typu TODO list stworzona jako projekt edukacyjny. Umożliwia za
 
 ## Demo
 
-- Lokalny demo: http://localhost:3000/
+- Lokalny demo: http://localhost:3000/Projekt-To-Do-List/
 
 > Uwaga: Demo dostępne po uruchomieniu serwera aplikacji w katalogu `todo-app`.
 
@@ -21,7 +21,7 @@ Aplikacja webowa typu TODO list stworzona jako projekt edukacyjny. Umożliwia za
    ```
 4. Otwórz przeglądarkę i przejdź do:
    ```
-   http://localhost:3000/
+   http://localhost:3000/Projekt-To-Do-List/
    ```
 
 ## Użyte technologie
