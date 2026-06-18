@@ -2,6 +2,9 @@
 
 Aplikacja webowa typu TODO list stworzona jako projekt edukacyjny. Umożliwia zarządzanie zadaniami, filtrowanie według stanu i priorytetu, wyszukiwanie, oraz korzysta z nowoczesnego interfejsu React + MUI.
 
+## Link do strony
+- https://mori656.github.io/Projekt-To-Do-List/
+
 ## Demo
 
 - Lokalny demo: http://localhost:3000/Projekt-To-Do-List/
