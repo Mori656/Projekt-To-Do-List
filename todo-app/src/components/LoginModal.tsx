@@ -7,7 +7,6 @@ import DialogContent from '@mui/material/DialogContent'
 import TextField from '@mui/material/TextField'
 import Button from '@mui/material/Button'
 import Stack from '@mui/material/Stack'
-import Typography from '@mui/material/Typography'
 import { loginSchema } from '../hooks/validation_zod'
 import RegisterForm from './register/RegisterForm'
 import type { Step1Data, RegisterStep1Data, RegisterStep2Data } from '../hooks/validation_zod'
@@ -20,17 +19,6 @@ type LoginModalProps = {
   onSwitchMode: () => void
 }
 
-const getPasswordStrength = (pwd: string) => {
-  let score = 0
-  if (pwd.length >= 8) score++
-  if (/[A-Z]/.test(pwd)) score++
-  if (/[0-9]/.test(pwd)) score++
-  if (/[^A-Za-z0-9]/.test(pwd)) score++
-
-  if (score <= 1) return 'słabe'
-  if (score === 2 || score === 3) return 'średnie'
-  return 'silne'
-}
 
 export default function LoginModal({
   open,
@@ -42,7 +30,6 @@ export default function LoginModal({
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
     reset,
   } = useForm<Step1Data>({
@@ -55,7 +42,6 @@ export default function LoginModal({
     reValidateMode: 'onChange',
   })
 
-  const password = watch('password') || ''
 
   useEffect(() => {
     if (!open) {
@@ -111,11 +97,7 @@ export default function LoginModal({
               error={!!errors.password}
               helperText={errors.password?.message}
             />
-            {password && (
-              <Typography variant="body2" color="text.secondary">
-                Siła hasła: <strong>{getPasswordStrength(password)}</strong>
-              </Typography>
-            )}
+           
             <Button
               type="button"
               onClick={onSwitchMode}
