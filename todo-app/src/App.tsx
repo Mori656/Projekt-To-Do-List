@@ -147,15 +147,15 @@ function App() {
   const handleNavigate = (view: 'todo' | 'moviebrowser') => {
     handleMenuClose()
     if (view === 'todo') {
-      navigate('/Projekt-To-Do-List/todo')
+      navigate('/todo')
       return
     }
-    navigate('/Projekt-To-Do-List/movies')
+    navigate('/movies')
   }
 
   const handleProfileClick = () => {
     if (isLoggedIn) {
-      navigate('/Projekt-To-Do-List/profile')
+      navigate('/profile')
       handleMenuClose()
       return
     }
