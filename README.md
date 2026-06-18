@@ -21,7 +21,7 @@ Aplikacja webowa typu TODO list stworzona jako projekt edukacyjny. Umożliwia za
    ```
 4. Otwórz przeglądarkę i przejdź do:
    ```
-   http://localhost:3001/
+   http://localhost:3000/
    ```
 
 ## Użyte technologie
