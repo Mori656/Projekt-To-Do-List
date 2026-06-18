@@ -34,6 +34,7 @@ export default function TodoItem({
         gap: 1.5,
         p: 1.75,
         minHeight: 88,
+        minWidth: 230,
         borderRadius: 3,
         boxShadow: '0 18px 45px rgba(15, 23, 42, 0.08)',
         transition: 'transform 0.2s ease, box-shadow 0.2s ease',
@@ -59,7 +60,7 @@ export default function TodoItem({
         {completed ? <Check size={18} /> : <Box component="span" sx={{ width: 14, height: 14, borderRadius: '50%', border: 1, borderColor: 'divider' }} />} 
       </IconButton>
 
-      <Box sx={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
+      <Box sx={{ flex: 1, minWidth: 0, }}>
         <Typography
           variant="subtitle1"
           noWrap
@@ -100,13 +101,14 @@ export default function TodoItem({
       >
         {importance}
       </Box>
-
-      <IconButton onClick={onEdit} size="small" aria-label="Edytuj" sx={{ color: 'text.secondary' }}>
-        <Edit2 size={18} />
-      </IconButton>
-      <IconButton onClick={onDelete} size="small" aria-label="Usuń" sx={{ color: 'error.main' }}>
-        <Trash2 size={18} />
-      </IconButton>
+      <Box sx={{ display: 'flex', flexShrink: 0, gap: 1 }}>
+        <IconButton onClick={onEdit} size="small" aria-label="Edytuj" sx={{ color: 'text.secondary', flexShrink: 0}}>
+          <Edit2 size={18} />
+        </IconButton>
+        <IconButton onClick={onDelete} size="small" aria-label="Usuń" sx={{ color: 'error.main', flexShrink: 0 }}>
+          <Trash2 size={18} />
+        </IconButton>
+      </Box>
     </Card>
   )
 }
