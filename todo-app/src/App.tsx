@@ -20,6 +20,7 @@ import ProfilePage from './components/ProfilePage'
 import LoginModal from './components/LoginModal'
 import AddTodoDialog from './components/AddTodoDialog'
 import ConfirmDialog from './components/ConfirmDialog'
+import EditTodoDialog from './components/EditTodoDialog'
 import Sidebar from './components/dashboard/Sidebar'
 import MovieBrowser from './components/movieBrowser/MovieBrowser'
 import { getTheme } from './theme/muiTheme'
@@ -52,6 +53,9 @@ function App() {
   const [showConfirm, setShowConfirm] = useState(false)
   const [deleteId, setDeleteId] = useState<string | null>(null)
   const [showAddModal, setShowAddModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [editTodoId, setEditTodoId] = useState<string | null>(null)
+  const [editTodoData, setEditTodoData] = useState<{ task: string; timeLimit: string; importance: number } | null>(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [isRegisterMode, setIsRegisterMode] = useState(false)
@@ -106,18 +110,16 @@ function App() {
     const todo = todos.find((t) => t.id === id)
     if (!todo) return
 
-    const updatedTask = prompt('Edytuj tytuł zadania', todo.task)?.trim()
-    if (!updatedTask) return
+    setEditTodoId(id)
+    setEditTodoData({ task: todo.task, timeLimit: todo.timeLimit, importance: todo.importance })
+    setShowEditModal(true)
+  }
 
-    const updatedTime = prompt('Edytuj termin', todo.timeLimit)?.trim() || todo.timeLimit
-    const updatedImportanceInput = prompt('Edytuj importance (1-9)', String(todo.importance))
-    const updatedImportance = Number(updatedImportanceInput)
-    if (isNaN(updatedImportance) || updatedImportance < 1 || updatedImportance > 9) {
-      alert('Importance musi być liczbą 1-9')
-      return
-    }
-
-    dispatch({ type: 'EDIT', payload: { id, task: updatedTask, timeLimit: updatedTime, importance: updatedImportance } })
+  const handleSaveEdit = (payload: { task: string; timeLimit: string; importance: number }) => {
+    if (!editTodoId) return
+    dispatch({ type: 'EDIT', payload: { id: editTodoId, ...payload } })
+    setEditTodoId(null)
+    setEditTodoData(null)
   }
 
   const handleDeleteClick = (id: string) => {
@@ -335,6 +337,16 @@ function App() {
               </Box>
             </Fade>
 
+            <EditTodoDialog
+              open={showEditModal && editTodoData !== null}
+              onClose={() => {
+                setShowEditModal(false)
+                setEditTodoId(null)
+                setEditTodoData(null)
+              }}
+              onSave={handleSaveEdit}
+              initialData={editTodoData ?? { task: '', timeLimit: '', importance: 5 }}
+            />
             <Menu
               anchorEl={menuAnchorEl}
               open={menuOpen}
