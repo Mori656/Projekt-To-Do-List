@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "https://github.com/Mori656/Projekt-To-Do-List",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
@@ -11,7 +12,9 @@
     "accessibility:lighthouse": "node ./scripts/lighthouse-report.js",
     "accessibility:axe": "node ./scripts/axe-report.js",
     "accessibility:pa11y": "pa11y http://localhost:3000 --reporter json > ./reports/pa11y-report.json",
-    "accessibility:reports": "npm run accessibility:lighthouse && npm run accessibility:axe && npm run accessibility:pa11y"
+    "accessibility:reports": "npm run accessibility:lighthouse && npm run accessibility:axe && npm run accessibility:pa11y",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@emotion/react": "^11.11.0",
@@ -41,6 +44,7 @@
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
+    "gh-pages": "^6.3.0",
     "globals": "^17.4.0",
     "lighthouse": "^11.0.0",
     "msw": "^2.14.6",
